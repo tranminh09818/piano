@@ -106,7 +106,8 @@
     .piano-container {
       position: relative;
       width: 100%;
-      margin: 20px 0;
+      max-width: 1200px;
+      margin: 20px auto;
       perspective: 1000px;
     }
     
@@ -129,12 +130,16 @@
       border: 2px solid var(--piano-border);
       transform-style: preserve-3d;
       transform: rotateX(5deg);
+      width: 100%;
+      overflow-x: auto;
     }
     
     .white-keys {
       display: flex;
       position: relative;
       z-index: 1;
+      width: 100%;
+      min-width: 800px;
     }
     
     .black-keys {
@@ -142,6 +147,7 @@
       top: 15px;
       left: 0;
       width: 100%;
+      min-width: 800px;
       display: flex;
       padding: 0 10px;
       z-index: 2;
@@ -153,7 +159,8 @@
     
     .key {
       position: relative;
-      width: 65px;
+      flex: 1;
+      min-width: 50px;
       height: 220px;
       margin: 0 2px;
       border: 1px solid #999;
@@ -191,6 +198,7 @@
       transition: all 0.1s;
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
       z-index: 2;
+      margin: 0 2px;
     }
     
     .black-key:active, .black-key.active {
@@ -270,9 +278,9 @@
       color: rgba(255, 255, 255, 0.7);
     }
     
-    @media (max-width: 900px) {
+    @media (max-width: 1200px) {
       .key {
-        width: 50px;
+        min-width: 40px;
         height: 200px;
       }
       .black-key {
@@ -281,14 +289,26 @@
       }
     }
     
-    @media (max-width: 600px) {
+    @media (max-width: 900px) {
       .key {
-        width: 40px;
+        min-width: 35px;
         height: 180px;
       }
       .black-key {
-        width: 24px;
+        width: 25px;
         height: 100px;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .key {
+        min-width: 30px;
+        height: 160px;
+        font-size: 0.8rem;
+      }
+      .black-key {
+        width: 20px;
+        height: 90px;
         font-size: 0.7rem;
       }
     }
@@ -431,6 +451,42 @@
       font-size: 0.9rem;
       color: rgba(255, 255, 255, 0.6);
     }
+
+    .visualizer-container {
+      width: 100%;
+      max-width: 1200px;
+      height: 100px;
+      margin: 20px 0;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #visualizer {
+      width: 100%;
+      height: 100%;
+    }
+
+    .theme-dark {
+      --white-key-color: #f0f0f0;
+      --white-key-active: #d0d0d0;
+      --black-key-color: #111;
+      --black-key-active: #333;
+      --piano-border: #996633;
+      --wood-color: #5c3a21;
+      background: linear-gradient(135deg, #0a0a1a, #0d1b2a, #1b263b);
+    }
+
+    .theme-light {
+      --white-key-color: #ffffff;
+      --white-key-active: #e0e0e0;
+      --black-key-color: #000000;
+      --black-key-active: #333333;
+      --piano-border: #996633;
+      --wood-color: #8B4513;
+      background: linear-gradient(135deg, #f5f7fa, #e4e8f0, #d3d9e3);
+      color: #333;
+    }
   </style>
 </head>
 <body>
@@ -446,7 +502,7 @@
     <div class="controls">
       <div class="control-group">
         <span class="control-label">Âm sắc:</span>
-        <select id="instrument-select">
+        <select id="instrument-select" title="Chọn âm sắc">
           <option value="piano">Piano</option>
           <option value="bright_piano">Piano Sáng</option>
           <option value="electric_piano">Piano Điện</option>
@@ -457,7 +513,7 @@
       
       <div class="control-group volume-control">
         <span class="control-label"><i class="fas fa-volume-up"></i></span>
-        <input type="range" id="volume" min="0" max="1" step="0.01" value="0.7">
+        <input type="range" id="volume" min="0" max="1" step="0.01" value="0.7" title="Điều chỉnh âm lượng">
       </div>
       
       <div class="control-group">
@@ -471,10 +527,19 @@
         </button>
         <button id="play-button" disabled><i class="fas fa-play"></i> Phát</button>
         <button id="stop-button" disabled><i class="fas fa-stop"></i> Dừng</button>
+        <button id="save-button" disabled><i class="fas fa-save"></i> Lưu</button>
       </div>
       
       <div class="control-group">
         <button id="metronome-button"><i class="fas fa-stopwatch"></i> Nhịp</button>
+        <input type="range" id="tempo" min="40" max="200" value="120" title="Điều chỉnh tempo">
+        <span id="tempo-display">120 BPM</span>
+      </div>
+
+      <div class="control-group">
+        <button id="theme-toggle"><i class="fas fa-moon"></i> Theme</button>
+        <button id="upload-midi"><i class="fas fa-upload"></i> MIDI</button>
+        <input type="file" id="midi-file" accept=".mid,.midi" style="display: none">
       </div>
     </div>
     
@@ -559,6 +624,10 @@
         <div class="demo-song" data-song="twinkle">Twinkle Twinkle Little Star</div>
       </div>
     </div>
+
+    <div class="visualizer-container">
+      <canvas id="visualizer"></canvas>
+    </div>
   </div>
   
   <footer>
@@ -581,6 +650,12 @@
   let metronomeActive = false;
   let metronomeInterval;
   let metronomeCount = 0;
+  
+  // Thêm các biến mới
+  let analyser;
+  let visualizerCtx;
+  let isDarkTheme = false;
+  let midiFile;
   
   // Ánh xạ tên nốt đến tần số
   const noteFrequencies = {
@@ -653,6 +728,9 @@
       masterGainNode = audioContext.createGain();
       masterGainNode.connect(audioContext.destination);
       masterGainNode.gain.value = volumeControl.value;
+      
+      // Khởi tạo visualizer
+      initVisualizer();
       
       // Khởi tạo các demo bài hát
       initDemoSongs();
@@ -786,10 +864,13 @@
     metronomeButton.classList.add('active');
     metronomeCount = 0;
     
+    const tempo = parseInt(tempoControl.value);
+    const interval = 60000 / tempo; // Chuyển BPM thành milliseconds
+    
     metronomeInterval = setInterval(() => {
       playMetronomeClick(metronomeCount % 4 === 0);
       metronomeCount++;
-    }, 500); // 120 BPM
+    }, interval);
   }
   
   function stopMetronome() {
@@ -1263,6 +1344,100 @@
     // Hiển thị nốt
     setTimeout(() => displayPlayedNote(noteName), (startTime - audioContext.currentTime) * 1000);
   }
+
+  // Khởi tạo visualizer
+  function initVisualizer() {
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 256;
+    masterGainNode.connect(analyser);
+    
+    const canvas = document.getElementById('visualizer');
+    visualizerCtx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    function drawVisualizer() {
+      requestAnimationFrame(drawVisualizer);
+      
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      analyser.getByteFrequencyData(dataArray);
+      
+      visualizerCtx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      visualizerCtx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      const barWidth = (canvas.width / bufferLength) * 2.5;
+      let x = 0;
+      
+      for (let i = 0; i < bufferLength; i++) {
+        const barHeight = (dataArray[i] / 255) * canvas.height;
+        
+        visualizerCtx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
+        visualizerCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+        
+        x += barWidth + 1;
+      }
+    }
+    
+    drawVisualizer();
+  }
+
+  // Thêm sự kiện cho nút lưu
+  document.getElementById('save-button').addEventListener('click', function() {
+    if (recordedNotes.length > 0) {
+      const data = {
+        notes: recordedNotes,
+        instrument: instrumentSelect.value,
+        tempo: document.getElementById('tempo').value
+      };
+      
+      const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'piano-recording.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  });
+
+  // Thêm sự kiện cho nút theme
+  document.getElementById('theme-toggle').addEventListener('click', function() {
+    isDarkTheme = !isDarkTheme;
+    document.body.classList.toggle('theme-dark', isDarkTheme);
+    document.body.classList.toggle('theme-light', !isDarkTheme);
+    this.innerHTML = isDarkTheme ? '<i class="fas fa-sun"></i> Theme' : '<i class="fas fa-moon"></i> Theme';
+  });
+
+  // Thêm sự kiện cho nút upload MIDI
+  document.getElementById('upload-midi').addEventListener('click', function() {
+    document.getElementById('midi-file').click();
+  });
+
+  document.getElementById('midi-file').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        midiFile = e.target.result;
+        // Xử lý file MIDI ở đây
+        // Cần thêm thư viện MIDI.js hoặc tương tự
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  });
+
+  // Thêm sự kiện cho tempo control
+  const tempoControl = document.getElementById('tempo');
+  const tempoDisplay = document.getElementById('tempo-display');
+  
+  tempoControl.addEventListener('input', function() {
+    tempoDisplay.textContent = this.value + ' BPM';
+    if (metronomeActive) {
+      stopMetronome();
+      startMetronome();
+    }
+  });
 });
 
     </script>
