@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đàn Piano Ảo Chuyên Nghiệp</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --white-key-color: #f8f8f8;
+      --white-key-active: #e0e0e0;
+      --black-key-color: #222;
+      --black-key-active: #555;
+      --piano-border: #996633;
+      --wood-color: #8B4513;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .app-container {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    header {
+      width: 100%;
+      text-align: center;
+      padding: 20px 0;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      background: linear-gradient(to right, #cca352, #e6c171);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      width: 100%;
+      margin: 10px 0 25px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+    
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .control-label {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    
+    select, button {
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: none;
+      background-color: #2e3852;
+      color: white;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    select:hover, button:hover {
+      background-color: #3a4566;
+    }
+    
+    button {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    button.active {
+      background-color: #4CAF50;
+    }
+    
+    .piano-container {
+      position: relative;
+      width: 100%;
+      margin: 20px 0;
+      perspective: 1000px;
+    }
+    
+    .piano-top {
+      height: 30px;
+      background: var(--wood-color);
+      border-radius: 10px 10px 0 0;
+      border: 2px solid var(--piano-border);
+      border-bottom: none;
+      box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.4);
+    }
+    
+    .piano {
+      display: flex;
+      position: relative;
+      background: var(--wood-color);
+      padding: 15px 10px 0;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      border: 2px solid var(--piano-border);
+      transform-style: preserve-3d;
+      transform: rotateX(5deg);
+    }
+    
+    .white-keys {
+      display: flex;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .black-keys {
+      position: absolute;
+      top: 15px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      padding: 0 10px;
+      z-index: 2;
+    }
+    
+    .key-spacer {
+      flex: 1;
+    }
+    
+    .key {
+      position: relative;
+      width: 65px;
+      height: 220px;
+      margin: 0 2px;
+      border: 1px solid #999;
+      border-radius: 0 0 5px 5px;
+      background-color: var(--white-key-color);
+      color: #555;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 10px;
+      font-weight: bold;
+      transition: all 0.1s;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .key:active, .key.active {
+      background-color: var(--white-key-active);
+      transform: translateY(2px);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .black-key {
+      width: 40px;
+      height: 130px;
+      background-color: var(--black-key-color);
+      border-radius: 0 0 5px 5px;
+      color: #ddd;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 10px;
+      font-weight: bold;
+      transition: all 0.1s;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+      z-index: 2;
+    }
+    
+    .black-key:active, .black-key.active {
+      background-color: var(--black-key-active);
+      transform: translateY(2px);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    
+    .instructions {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      margin: 30px 0;
+      width: 100%;
+      max-width: 800px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .instructions h2 {
+      margin-bottom: 15px;
+      color: #cca352;
+    }
+    
+    .key-guide {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .key-item {
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px 15px;
+      border-radius: 4px;
+      background-color: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .key-label {
+      display: inline-block;
+      background-color: #2e3852;
+      padding: 3px 6px;
+      margin-right: 5px;
+      border-radius: 3px;
+      font-family: monospace;
+      font-weight: bold;
+    }
+    
+    .demo-songs {
+      margin-top: 10px;
+    }
+    
+    .demo-song {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 8px 15px;
+      margin: 5px 0;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .demo-song:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .octave-indicator {
+      position: absolute;
+      bottom: -30px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    @media (max-width: 900px) {
+      .key {
+        width: 50px;
+        height: 200px;
+      }
+      .black-key {
+        width: 30px;
+        height: 120px;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .key {
+        width: 40px;
+        height: 180px;
+      }
+      .black-key {
+        width: 24px;
+        height: 100px;
+        font-size: 0.7rem;
+      }
+    }
+    
+    /* Thêm hiệu ứng ripple khi nhấn phím */
+    .key::after, .black-key::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.5);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1, 1) translate(-50%, -50%);
+      transform-origin: 50% 50%;
+    }
+    
+    .key.active::after, .black-key.active::after {
+      animation: ripple 0.6s ease-out;
+    }
+    
+    @keyframes ripple {
+      0% {
+        opacity: 1;
+        transform: scale(0, 0) translate(-50%, -50%);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(20, 20) translate(-50%, -50%);
+      }
+    }
+    
+    /* Thêm hiệu ứng cho tên nốt nhạc */
+    .note-display {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .note-highlight {
+      display: inline-block;
+      padding: 5px 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      animation: fadeOut 1.5s forwards;
+    }
+    
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      70% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    
+    /* Hiệu ứng cho nút record */
+    .recording-indicator {
+      position: relative;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #f44336;
+      margin-right: 5px;
+    }
+    
+    .recording .recording-indicator::before {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: rgba(244, 67, 54, 0.3);
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        transform: scale(0.7);
+        opacity: 1;
+      }
+      70% {
+        transform: scale(1.2);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(0.7);
+        opacity: 0;
+      }
+    }
+    
+    /* Volume control */
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 120px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+      outline: none;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #cca352;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    
+    /* Logo/brand styling */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 5px;
+    }
+    
+    .brand-logo {
+      font-size: 2rem;
+      color: #cca352;
+    }
+    
+    /* Footer styling */
+    footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.6);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header>
+      <div class="brand">
+        <div class="brand-logo"><i class="fas fa-music"></i></div>
+        <h1>VirtualPiano Pro</h1>
+      </div>
+      <p>Chơi đàn piano cao cấp trên trình duyệt web</p>
+    </header>
+    
+    <div class="controls">
+      <div class="control-group">
+        <span class="control-label">Âm sắc:</span>
+        <select id="instrument-select">
+          <option value="piano">Piano</option>
+          <option value="bright_piano">Piano Sáng</option>
+          <option value="electric_piano">Piano Điện</option>
+          <option value="synth">Synthesizer</option>
+          <option value="strings">Đàn Dây</option>
+        </select>
+      </div>
+      
+      <div class="control-group volume-control">
+        <span class="control-label"><i class="fas fa-volume-up"></i></span>
+        <input type="range" id="volume" min="0" max="1" step="0.01" value="0.7">
+      </div>
+      
+      <div class="control-group">
+        <button id="octave-down"><i class="fas fa-angle-left"></i> Octave</button>
+        <button id="octave-up">Octave <i class="fas fa-angle-right"></i></button>
+      </div>
+      
+      <div class="control-group">
+        <button id="record-button" class="record-btn">
+          <div class="recording-indicator"></div>Ghi âm
+        </button>
+        <button id="play-button" disabled><i class="fas fa-play"></i> Phát</button>
+        <button id="stop-button" disabled><i class="fas fa-stop"></i> Dừng</button>
+      </div>
+      
+      <div class="control-group">
+        <button id="metronome-button"><i class="fas fa-stopwatch"></i> Nhịp</button>
+      </div>
+    </div>
+    
+    <div class="note-display"></div>
+    
+    <div class="piano-container">
+      <div class="piano-top"></div>
+      <div class="piano">
+        <div class="white-keys">
+          <div class="key" data-note="C" data-key="a">C</div>
+          <div class="key" data-note="D" data-key="s">D</div>
+          <div class="key" data-note="E" data-key="d">E</div>
+          <div class="key" data-note="F" data-key="f">F</div>
+          <div class="key" data-note="G" data-key="g">G</div>
+          <div class="key" data-note="A" data-key="h">A</div>
+          <div class="key" data-note="B" data-key="j">B</div>
+          <div class="key" data-note="C2" data-key="k">C</div>
+          <div class="key" data-note="D2" data-key="l">D</div>
+          <div class="key" data-note="E2" data-key=";">E</div>
+          <div class="key" data-note="F2" data-key="'">F</div>
+          <div class="key" data-note="G2" data-key="\\">G</div>
+        </div>
+        
+        <div class="black-keys">
+          <div class="key-spacer" style="width: 45px;"></div>
+          <div class="black-key" data-note="C#" data-key="w">C#</div>
+          <div class="key-spacer" style="width: 30px;"></div>
+          <div class="black-key" data-note="D#" data-key="e">D#</div>
+          <div class="key-spacer" style="width: 65px;"></div>
+          <div class="black-key" data-note="F#" data-key="t">F#</div>
+          <div class="key-spacer" style="width: 30px;"></div>
+          <div class="black-key" data-note="G#" data-key="y">G#</div>
+          <div class="key-spacer" style="width: 30px;"></div>
+          <div class="black-key" data-note="A#" data-key="u">A#</div>
+          <div class="key-spacer" style="width: 65px;"></div>
+          <div class="black-key" data-note="C#2" data-key="o">C#</div>
+          <div class="key-spacer" style="width: 30px;"></div>
+          <div class="black-key" data-note="D#2" data-key="p">D#</div>
+        </div>
+      </div>
+      <div class="octave-indicator">
+        <span>Octave: <span id="octave-display">4</span></span>
+      </div>
+    </div>
+    
+    <div class="instructions">
+      <h2>Hướng dẫn sử dụng</h2>
+      <p>Bạn có thể chơi đàn piano bằng nhiều cách:</p>
+      <ul>
+        <li>Nhấp chuột vào các phím đàn</li>
+        <li>Sử dụng bàn phím máy tính để chơi các nốt tương ứng</li>
+        <li>Thử các demo bài hát được cung cấp sẵn</li>
+      </ul>
+      
+      <h3 style="margin-top: 15px;">Bàn phím</h3>
+      <div class="key-guide">
+        <div class="key-item"><span class="key-label">A</span> C</div>
+        <div class="key-item"><span class="key-label">W</span> C#</div>
+        <div class="key-item"><span class="key-label">S</span> D</div>
+        <div class="key-item"><span class="key-label">E</span> D#</div>
+        <div class="key-item"><span class="key-label">D</span> E</div>
+        <div class="key-item"><span class="key-label">F</span> F</div>
+        <div class="key-item"><span class="key-label">T</span> F#</div>
+        <div class="key-item"><span class="key-label">G</span> G</div>
+        <div class="key-item"><span class="key-label">Y</span> G#</div>
+        <div class="key-item"><span class="key-label">H</span> A</div>
+        <div class="key-item"><span class="key-label">U</span> A#</div>
+        <div class="key-item"><span class="key-label">J</span> B</div>
+        <div class="key-item"><span class="key-label">K</span> C</div>
+        <div class="key-item"><span class="key-label">O</span> C#</div>
+        <div class="key-item"><span class="key-label">L</span> D</div>
+        <div class="key-item"><span class="key-label">P</span> D#</div>
+        <div class="key-item"><span class="key-label">;</span> E</div>
+        <div class="key-item"><span class="key-label">'</span> F</div>
+        <div class="key-item"><span class="key-label">\</span> G</div>
+      </div>
+      
+      <h3 style="margin-top: 20px;">Demo bài hát</h3>
+      <div class="demo-songs">
+        <div class="demo-song" data-song="happy-birthday">Happy Birthday</div>
+        <div class="demo-song" data-song="fur-elise">Fur Elise (Beethoven)</div>
+        <div class="demo-song" data-song="twinkle">Twinkle Twinkle Little Star</div>
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    <p>© 2025 VirtualPiano Pro - Được tạo bởi devthm cho Anh Thu</p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+  // Khởi tạo các biến toàn cục
+  let audioContext;
+  let masterGainNode;
+  let currentOctave = 4;
+  const noteDisplay = document.querySelector('.note-display');
+  const octaveDisplay = document.getElementById('octave-display');
+  const volumeControl = document.getElementById('volume');
+  let isRecording = false;
+  let recordedNotes = [];
+  let startRecordTime = 0;
+  let isPlaying = false;
+  let metronomeActive = false;
+  let metronomeInterval;
+  let metronomeCount = 0;
+  
+  // Ánh xạ tên nốt đến tần số
+  const noteFrequencies = {
+    'C': 261.63,
+    'C#': 277.18,
+    'D': 293.66,
+    'D#': 311.13,
+    'E': 329.63,
+    'F': 349.23,
+    'F#': 369.99,
+    'G': 392.00,
+    'G#': 415.30,
+    'A': 440.00,
+    'A#': 466.16,
+    'B': 493.88
+  };
+  
+  // Các tham số âm sắc
+  const instruments = {
+    'piano': {
+      type: 'triangle',
+      attack: 0.01,
+      decay: 0.5,
+      sustain: 0.8,
+      release: 2
+    },
+    'bright_piano': {
+      type: 'square',
+      attack: 0.01,
+      decay: 0.3,
+      sustain: 0.7,
+      release: 1.5
+    },
+    'electric_piano': {
+      type: 'sine',
+      attack: 0.02,
+      decay: 0.5,
+      sustain: 0.5,
+      release: 1.8
+    },
+    'synth': {
+      type: 'sawtooth',
+      attack: 0.1,
+      decay: 0.3,
+      sustain: 0.7,
+      release: 2
+    },
+    'strings': {
+      type: 'sine',
+      attack: 0.3,
+      decay: 0.8,
+      sustain: 0.9,
+      release: 3
+    }
+  };
+  
+  // Các nút điều khiển
+  const octaveDownBtn = document.getElementById('octave-down');
+  const octaveUpBtn = document.getElementById('octave-up');
+  const recordButton = document.getElementById('record-button');
+  const playButton = document.getElementById('play-button');
+  const stopButton = document.getElementById('stop-button');
+  const instrumentSelect = document.getElementById('instrument-select');
+  const metronomeButton = document.getElementById('metronome-button');
+  
+  // Khởi tạo Audio Context khi người dùng tương tác
+  function initAudio() {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      masterGainNode = audioContext.createGain();
+      masterGainNode.connect(audioContext.destination);
+      masterGainNode.gain.value = volumeControl.value;
+      
+      // Khởi tạo các demo bài hát
+      initDemoSongs();
+    }
+  }
+  
+  // Cập nhật khi thay đổi âm lượng
+  volumeControl.addEventListener('input', function() {
+    if (masterGainNode) {
+      masterGainNode.gain.value = this.value;
+    }
+  });
+  
+  // Thay đổi octave
+  octaveDownBtn.addEventListener('click', function() {
+    if (currentOctave > 1) {
+      currentOctave--;
+      octaveDisplay.textContent = currentOctave;
+    }
+  });
+  
+  octaveUpBtn.addEventListener('click', function() {
+    if (currentOctave < 7) {
+      currentOctave++;
+      octaveDisplay.textContent = currentOctave;
+    }
+  });
+  
+  // Ghi âm
+  recordButton.addEventListener('click', function() {
+    if (!isRecording) {
+      startRecording();
+    } else {
+      stopRecording();
+    }
+  });
+  
+  function startRecording() {
+    isRecording = true;
+    recordedNotes = [];
+    startRecordTime = Date.now();
+    recordButton.classList.add('recording');
+    playButton.disabled = true;
+    stopButton.disabled = true;
+  }
+  
+  function stopRecording() {
+    isRecording = false;
+    recordButton.classList.remove('recording');
+    playButton.disabled = false;
+    stopButton.disabled = false;
+  }
+  
+  // Phát ghi âm
+  playButton.addEventListener('click', function() {
+    if (!isPlaying && recordedNotes.length > 0) {
+      playRecording();
+    }
+  });
+  
+  stopButton.addEventListener('click', function() {
+    stopPlayback();
+  });
+  
+  function playRecording() {
+    if (!audioContext) initAudio();
+    
+    isPlaying = true;
+    playButton.disabled = true;
+    stopButton.disabled = false;
+    recordButton.disabled = true;
+    
+    let startTime = audioContext.currentTime;
+    
+    // Lặp qua tất cả các nốt ghi âm và phát lại
+    recordedNotes.forEach(note => {
+      const timeOffset = note.time / 1000; // Chuyển đổi từ ms sang giây
+      const noteTime = startTime + timeOffset;
+      const duration = note.duration / 1000;
+      
+      playNoteAtTime(note.note, note.octave, noteTime, duration);
+      
+      // Hiệu ứng hiển thị trên phím
+      setTimeout(() => {
+        const element = findKeyElement(note.note);
+        if (element) {
+          element.classList.add('active');
+          setTimeout(() => {
+            element.classList.remove('active');
+          }, duration * 1000);
+        }
+      }, timeOffset * 1000);
+    });
+    
+    // Tính toán tổng thời gian của bản ghi âm
+    if (recordedNotes.length > 0) {
+      const lastNote = recordedNotes[recordedNotes.length - 1];
+      const totalDuration = (lastNote.time + lastNote.duration) / 1000 + 0.5;
+      
+      setTimeout(() => {
+        stopPlayback();
+      }, totalDuration * 1000);
+    }
+  }
+  
+  function findKeyElement(noteName) {
+    // Tìm phần tử DOM của phím đàn dựa trên tên nốt
+    return document.querySelector(`[data-note="${noteName}"]`);
+  }
+  
+  function stopPlayback() {
+    isPlaying = false;
+    playButton.disabled = false;
+    stopButton.disabled = true;
+    recordButton.disabled = false;
+  }
+  
+  // Metronome
+  metronomeButton.addEventListener('click', function() {
+    if (!metronomeActive) {
+      startMetronome();
+    } else {
+      stopMetronome();
+    }
+  });
+  
+  function startMetronome() {
+    if (!audioContext) initAudio();
+    
+    metronomeActive = true;
+    metronomeButton.classList.add('active');
+    metronomeCount = 0;
+    
+    metronomeInterval = setInterval(() => {
+      playMetronomeClick(metronomeCount % 4 === 0);
+      metronomeCount++;
+    }, 500); // 120 BPM
+  }
+  
+  function stopMetronome() {
+    metronomeActive = false;
+    metronomeButton.classList.remove('active');
+    clearInterval(metronomeInterval);
+  }
+  
+  function playMetronomeClick(isAccent) {
+    const osc = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    osc.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    // Âm thanh cao cho các nhịp mạnh, thấp cho các nhịp yếu
+    osc.frequency.value = isAccent ? 1000 : 800;
+    gainNode.gain.value = isAccent ? 0.2 : 0.1;
+    
+    osc.start();
+    osc.stop(audioContext.currentTime + 0.05);
+    
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.05);
+  }
+  
+  // Xử lý phím đàn
+  const keys = document.querySelectorAll('.key, .black-key');
+  const keyMap = {};
+  const activeNotes = {};
+  
+  keys.forEach(key => {
+    const note = key.getAttribute('data-note');
+    const keyPress = key.getAttribute('data-key');
+    keyMap[keyPress] = { element: key, note: note };
+    
+    // Xử lý sự kiện khi nhấp chuột
+    key.addEventListener('mousedown', () => {
+      initAudio();
+      
+      // Lấy octave thích hợp dựa trên nốt
+      const noteOctave = getNoteOctave(note);
+      playNote(note, noteOctave, key);
+    });
+    
+    key.addEventListener('mouseup', () => stopNote(key));
+    key.addEventListener('mouseleave', () => stopNote(key));
+    key.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      initAudio();
+      const noteOctave = getNoteOctave(note);
+      playNote(note, noteOctave, key);
+    });
+    key.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      stopNote(key);
+    });
+  });
+  
+  // Chuyển đổi từ tên nốt sang octave
+  function getNoteOctave(note) {
+    if (note.includes('2')) {
+      return currentOctave + 1;
+    } else {
+      return currentOctave;
+    }
+  }
+  
+  // Chuyển đổi tên nốt thành tên cơ bản (bỏ số)
+  function getBasicNoteName(noteName) {
+    return noteName.replace(/[0-9]/g, '');
+  }
+  
+  // Xử lý sự kiện bàn phím
+  document.addEventListener('keydown', (e) => {
+    if (e.repeat) return; // Ngăn chặn sự kiện lặp lại khi giữ phím
+    
+    initAudio();
+    
+    const key = e.key.toLowerCase();
+    if (keyMap[key]) {
+      const noteInfo = keyMap[key];
+      const noteOctave = getNoteOctave(noteInfo.note);
+      playNote(noteInfo.note, noteOctave, noteInfo.element);
+    }
+  });
+  
+  document.addEventListener('keyup', (e) => {
+    const key = e.key.toLowerCase();
+    if (keyMap[key]) {
+      stopNote(keyMap[key].element);
+    }
+  });
+  
+  // Hiển thị nốt nhạc đang phát
+  function displayPlayedNote(note) {
+    const basicNote = getBasicNoteName(note);
+    noteDisplay.innerHTML = `<span class="note-highlight">${basicNote}</span>`;
+  }
+  
+  // Phát âm thanh nốt nhạc
+  function playNote(note, octave, element) {
+    // Nếu nốt đang được phát, dừng nó trước
+    if (activeNotes[note]) {
+      stopNote(element);
+    }
+    
+    element.classList.add('active');
+    
+    // Hiển thị nốt đang chơi
+    displayPlayedNote(note);
+    
+    const cleanNote = getBasicNoteName(note);
+    const freq = calculateFrequency(cleanNote, octave);
+    
+    const instrumentType = instrumentSelect.value;
+    const instrument = instruments[instrumentType];
+    
+    const startTime = audioContext.currentTime;
+    const noteId = startTime.toString();
+    
+    // Tạo các node âm thanh
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    // Tạo hiệu ứng reverb nhẹ
+    const convolver = audioContext.createConvolver();
+    createReverb(convolver, 2, 0.8);
+    
+    // Kết nối các node
+    oscillator.connect(gainNode);
+    gainNode.connect(convolver);
+    convolver.connect(masterGainNode);
+    
+    // Cấu hình oscillator
+    oscillator.type = instrument.type;
+    oscillator.frequency.value = freq;
+    
+    // Thêm một chút detune để âm thanh tự nhiên hơn
+    oscillator.detune.value = Math.random() * 4 - 2;
+    
+    // Áp dụng ADSR envelope
+    const now = audioContext.currentTime;
+    gainNode.gain.setValueAtTime(0, now);
+    gainNode.gain.linearRampToValueAtTime(1, now + instrument.attack);
+    gainNode.gain.linearRampToValueAtTime(instrument.sustain, now + instrument.attack + instrument.decay);
+    
+    oscillator.start();
+    
+    // Lưu thông tin cho việc dừng nốt
+    activeNotes[note] = {
+      oscillator: oscillator,
+      gainNode: gainNode,
+      startTime: startTime,
+      id: noteId
+    };
+    
+    // Ghi lại nốt nhạc nếu đang ghi âm
+    if (isRecording) {
+      const noteTime = Date.now() - startRecordTime;
+      recordedNotes.push({
+        note: note,
+        octave: octave,
+        time: noteTime,
+        duration: 0, // Sẽ được cập nhật khi dừng nốt
+        id: noteId
+      });
+    }
+  }
+  
+  function playNoteAtTime(note, octave, startTime, duration) {
+    const cleanNote = getBasicNoteName(note);
+    const freq = calculateFrequency(cleanNote, octave);
+    
+    const instrumentType = instrumentSelect.value;
+    const instrument = instruments[instrumentType];
+    
+    // Tạo các node âm thanh
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    // Kết nối các node
+    oscillator.connect(gainNode);
+    gainNode.connect(masterGainNode);
+    
+    // Cấu hình oscillator
+    oscillator.type = instrument.type;
+    oscillator.frequency.value = freq;
+    
+    // Áp dụng ADSR envelope
+    gainNode.gain.setValueAtTime(0, startTime);
+    gainNode.gain.linearRampToValueAtTime(1, startTime + instrument.attack);
+    gainNode.gain.linearRampToValueAtTime(instrument.sustain, startTime + instrument.attack + instrument.decay);
+    gainNode.gain.setValueAtTime(instrument.sustain, startTime + duration - instrument.release);
+    gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+    
+    // Phát âm thanh
+    oscillator.start(startTime);
+    oscillator.stop(startTime + duration + 0.1);
+    
+    // Hiển thị nốt
+    setTimeout(() => displayPlayedNote(note), (startTime - audioContext.currentTime) * 1000);
+  }
+  
+  // Tạo hiệu ứng reverb
+  function createReverb(convolverNode, duration, decay) {
+    const sampleRate = audioContext.sampleRate;
+    const length = sampleRate * duration;
+    const impulse = audioContext.createBuffer(2, length, sampleRate);
+    
+    const leftChannel = impulse.getChannelData(0);
+    const rightChannel = impulse.getChannelData(1);
+    
+    for (let i = 0; i < length; i++) {
+      const n = i / length;
+      // Tạo tiếng vang giảm dần theo hàm mũ
+      leftChannel[i] = (Math.random() * 2 - 1) * Math.pow(1 - n, decay);
+      rightChannel[i] = (Math.random() * 2 - 1) * Math.pow(1 - n, decay);
+    }
+    
+    convolverNode.buffer = impulse;
+  }
+  
+  // Dừng phát nốt nhạc
+  function stopNote(element) {
+    element.classList.remove('active');
+    
+    const note = element.getAttribute('data-note');
+    const activeNote = activeNotes[note];
+    
+    if (activeNote) {
+      const now = audioContext.currentTime;
+      const instrumentType = instrumentSelect.value;
+      const releaseTime = instruments[instrumentType].release;
+      
+      // Áp dụng giai đoạn release
+      activeNote.gainNode.gain.cancelScheduledValues(now);
+      activeNote.gainNode.gain.setValueAtTime(activeNote.gainNode.gain.value, now);
+      activeNote.gainNode.gain.exponentialRampToValueAtTime(0.001, now + releaseTime);
+      
+      // Dừng oscillator sau khi release kết thúc
+      setTimeout(() => {
+        if (activeNote.oscillator) {
+          activeNote.oscillator.stop();
+        }
+      }, releaseTime * 1000);
+      
+      // Cập nhật thời lượng nếu đang ghi âm
+      if (isRecording) {
+        const noteTime = Date.now() - startRecordTime;
+        
+        // Tìm nốt trong danh sách ghi âm và cập nhật thời lượng
+        const recordedNote = recordedNotes.find(n => n.note === note && n.duration === 0);
+        if (recordedNote) {
+          recordedNote.duration = noteTime - recordedNote.time;
+        }
+      }
+      
+      delete activeNotes[note];
+    }
+  }
+  
+  // Tính toán tần số của nốt nhạc
+  function calculateFrequency(note, octave) {
+    const baseFreq = noteFrequencies[note];
+    if (!baseFreq) return 440; // Mặc định là A4
+    
+    // Điều chỉnh theo octave (chuẩn là octave 4)
+    return baseFreq * Math.pow(2, octave - 4);
+  }
+  
+  // Khởi tạo các bài hát demo
+  function initDemoSongs() {
+    const demoSongs = {
+      'happy-birthday': [
+         { note: 'G', duration: 0.6, wait: 0 },
+    { note: 'E', duration: 0.4, wait: 0.7 },
+    { note: 'G', duration: 0.6, wait: 0.5 },
+    { note: 'A', duration: 0.6, wait: 0.7 },
+    { note: 'G', duration: 0.4, wait: 0.7 },
+    { note: 'E', duration: 0.6, wait: 0.5 },
+    { note: 'G', duration: 0.8, wait: 0.7 },
+
+    { note: 'G', duration: 0.6, wait: 1.0 },
+    { note: 'E', duration: 0.4, wait: 0.7 },
+    { note: 'G', duration: 0.6, wait: 0.5 },
+    { note: 'A', duration: 0.6, wait: 0.7 },
+    { note: 'G', duration: 0.4, wait: 0.7 },
+    { note: 'E', duration: 0.6, wait: 0.5 },
+    { note: 'D', duration: 0.8, wait: 0.7 },
+
+    { note: 'D', duration: 0.6, wait: 1.0 },
+    { note: 'E', duration: 0.6, wait: 0.7 },
+    { note: 'G', duration: 0.6, wait: 0.7 },
+    { note: 'A', duration: 0.6, wait: 0.7 },
+    { note: 'C2', duration: 0.8, wait: 0.7 },
+    { note: 'A', duration: 0.6, wait: 0.9 },
+    { note: 'G', duration: 0.8, wait: 0.7 }
+  ],
+
+  'canon-d': [
+    // Canon in D - Pachelbel (phần mở đầu nổi tiếng)
+    { note: 'F#', duration: 0.5, wait: 0 },
+    { note: 'E', duration: 0.5, wait: 0.6 },
+    { note: 'D', duration: 0.5, wait: 0.6 },
+    { note: 'C#', duration: 0.5, wait: 0.6 },
+    { note: 'B', duration: 0.5, wait: 0.6 },
+    { note: 'A', duration: 0.5, wait: 0.6 },
+    { note: 'B', duration: 0.5, wait: 0.6 },
+    { note: 'C#', duration: 0.5, wait: 0.6 },
+    
+    { note: 'D', duration: 0.5, wait: 0.8 },
+    { note: 'A', duration: 0.5, wait: 0.6 },
+    { note: 'B', duration: 0.5, wait: 0.6 },
+    { note: 'F#', duration: 0.5, wait: 0.6 },
+    { note: 'G', duration: 0.5, wait: 0.6 },
+    { note: 'D', duration: 0.5, wait: 0.6 },
+    { note: 'G', duration: 0.5, wait: 0.6 },
+    { note: 'A', duration: 0.5, wait: 0.6 },
+    
+    { note: 'D', duration: 0.5, wait: 0.8 },
+    { note: 'F#', duration: 0.5, wait: 0.6 },
+    { note: 'A', duration: 0.5, wait: 0.6 },
+    { note: 'D2', duration: 0.5, wait: 0.6 },
+    { note: 'C#2', duration: 0.5, wait: 0.6 },
+    { note: 'B', duration: 0.5, wait: 0.6 },
+    { note: 'A', duration: 0.5, wait: 0.6 },
+    { note: 'G', duration: 0.5, wait: 0.6 },
+    
+    { note: 'F#', duration: 0.5, wait: 0.8 },
+    { note: 'D', duration: 0.5, wait: 0.6 },
+    { note: 'E', duration: 0.5, wait: 0.6 },
+    { note: 'F#', duration: 0.5, wait: 0.6 },
+    { note: 'G', duration: 0.5, wait: 0.6 },
+    { note: 'A', duration: 0.5, wait: 0.6 },
+    { note: 'B', duration: 0.5, wait: 0.6 },
+    { note: 'G', duration: 0.5, wait: 0.6 }
+  ],
+      
+      'fur-elise': [
+        { note: 'E2', duration: 0.4, wait: 0 },
+        { note: 'D#2', duration: 0.4, wait: 0.5 },
+        { note: 'E2', duration: 0.4, wait: 0.5 },
+        { note: 'D#2', duration: 0.4, wait: 0.5 },
+        { note: 'E2', duration: 0.4, wait: 0.5 },
+        { note: 'B', duration: 0.4, wait: 0.5 },
+        { note: 'D2', duration: 0.4, wait: 0.5 },
+        { note: 'C2', duration: 0.4, wait: 0.5 },
+        { note: 'A', duration: 0.8, wait: 0.5 },
+        { note: 'C', duration: 0.4, wait: 1.0 },
+        { note: 'E', duration: 0.4, wait: 0.5 },
+        { note: 'A', duration: 0.4, wait: 0.5 },
+        { note: 'B', duration: 0.8, wait: 0.5 },
+        { note: 'E', duration: 0.4, wait: 1.0 },
+        { note: 'G#', duration: 0.4, wait: 0.5 },
+        { note: 'B', duration: 0.4, wait: 0.5 },
+        { note: 'C2', duration: 0.8, wait: 0.5 },
+        { note: 'E', duration: 0.4, wait: 1.0 },
+        { note: 'E2', duration: 0.4, wait: 0.5 },
+        { note: 'D#2', duration: 0.4, wait: 0.5 },
+        { note: 'E2', duration: 0.4, wait: 0.5 },
+        { note: 'D#2', duration: 0.4, wait: 0.5 },
+        { note: 'E2', duration: 0.4, wait: 0.5 },
+        { note: 'B', duration: 0.4, wait: 0.5 },
+        { note: 'D2', duration: 0.4, wait: 0.5 },
+        { note: 'C2', duration: 0.4, wait: 0.5 },
+        { note: 'A', duration: 0.8, wait: 0.5 }
+      ],
+      
+      'twinkle': [
+        { note: 'C', duration: 0.6, wait: 0 },
+        { note: 'C', duration: 0.6, wait: 0.7 },
+        { note: 'G', duration: 0.6, wait: 0.7 },
+        { note: 'G', duration: 0.6, wait: 0.7 },
+        { note: 'A', duration: 0.6, wait: 0.7 },
+        { note: 'A', duration: 0.6, wait: 0.7 },
+        { note: 'G', duration: 0.9, wait: 0.7 },
+        
+        { note: 'F', duration: 0.6, wait: 1.0 },
+        { note: 'F', duration: 0.6, wait: 0.7 },
+        { note: 'E', duration: 0.6, wait: 0.7 },
+        { note: 'E', duration: 0.6, wait: 0.7 },
+        { note: 'D', duration: 0.6, wait: 0.7 },
+        { note: 'D', duration: 0.6, wait: 0.7 },
+        { note: 'C', duration: 0.9, wait: 0.7 }
+      ]
+      
+    };
+    
+    // Thêm sự kiện cho các nút demo
+    document.querySelectorAll('.demo-song').forEach(button => {
+      button.addEventListener('click', function() {
+        const songName = this.getAttribute('data-song');
+        playDemoSong(demoSongs[songName]);
+      });
+    });
+  }
+  
+  // Phát bài hát demo
+  function playDemoSong(songNotes) {
+    if (!audioContext) initAudio();
+    
+    if (isPlaying) return;
+    
+    isPlaying = true;
+    playButton.disabled = true;
+    stopButton.disabled = false;
+    
+    let startTime = audioContext.currentTime;
+    
+    songNotes.forEach(noteData => {
+      const noteTime = startTime + noteData.wait;
+      playDemoNote(noteData.note, noteTime, noteData.duration);
+      
+      // Đánh dấu phím tương ứng
+      setTimeout(() => {
+        const element = document.querySelector(`[data-note="${noteData.note}"]`);
+        if (element) {
+          element.classList.add('active');
+          setTimeout(() => {
+            element.classList.remove('active');
+          }, noteData.duration * 1000);
+        }
+      }, noteData.wait * 1000);
+    });
+    
+    // Tính toán tổng thời gian của bản demo
+    if (songNotes.length > 0) {
+      const lastNote = songNotes[songNotes.length - 1];
+      const totalDuration = lastNote.wait + lastNote.duration + 0.5;
+      
+      setTimeout(() => {
+        isPlaying = false;
+        playButton.disabled = false;
+        stopButton.disabled = true;
+      }, totalDuration * 1000);
+    }
+  }
+  
+  // Phát nốt nhạc demo
+  function playDemoNote(noteName, startTime, duration) {
+    const basicNote = getBasicNoteName(noteName);
+    const octave = noteName.includes('2') ? currentOctave + 1 : currentOctave;
+    const freq = calculateFrequency(basicNote, octave);
+    
+    const instrumentType = instrumentSelect.value;
+    const instrument = instruments[instrumentType];
+    
+    // Tạo các node âm thanh
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    // Kết nối các node
+    oscillator.connect(gainNode);
+    gainNode.connect(masterGainNode);
+    
+    // Cấu hình oscillator
+    oscillator.type = instrument.type;
+    oscillator.frequency.value = freq;
+    
+    // Áp dụng ADSR envelope
+    gainNode.gain.setValueAtTime(0, startTime);
+    gainNode.gain.linearRampToValueAtTime(1, startTime + instrument.attack);
+    gainNode.gain.linearRampToValueAtTime(instrument.sustain, startTime + instrument.attack + instrument.decay);
+    gainNode.gain.setValueAtTime(instrument.sustain, startTime + duration - instrument.release);
+    gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+    
+    // Phát âm thanh
+    oscillator.start(startTime);
+    oscillator.stop(startTime + duration + 0.1);
+    
+    // Hiển thị nốt
+    setTimeout(() => displayPlayedNote(noteName), (startTime - audioContext.currentTime) * 1000);
+  }
+});
+
+    </script>
+  </body>
+</html>
