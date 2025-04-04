@@ -487,6 +487,389 @@
       background: linear-gradient(135deg, #f5f7fa, #e4e8f0, #d3d9e3);
       color: #333;
     }
+
+    /* Thêm các hiệu ứng mới */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s;
+    }
+    
+    .loading-screen.fade-out {
+      opacity: 0;
+    }
+    
+    .loading-content {
+      text-align: center;
+      color: white;
+    }
+    
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #cca352;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .visual-feedback {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    
+    .visual-feedback.press {
+      background: rgba(255, 255, 255, 0.3);
+      animation: press-feedback 0.5s ease-out;
+    }
+    
+    .visual-feedback.release {
+      background: rgba(255, 255, 255, 0.2);
+      animation: release-feedback 0.5s ease-out;
+    }
+    
+    .visual-feedback.volume {
+      background: rgba(204, 163, 82, 0.3);
+      animation: volume-feedback 0.5s ease-out;
+    }
+    
+    .visual-feedback.octave {
+      background: rgba(204, 163, 82, 0.3);
+      animation: octave-feedback 0.5s ease-out;
+    }
+    
+    @keyframes press-feedback {
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+    }
+    
+    @keyframes release-feedback {
+      0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+    }
+    
+    @keyframes volume-feedback {
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+    }
+    
+    @keyframes octave-feedback {
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+    }
+    
+    /* Cải thiện hiệu ứng cho các phím đàn */
+    .key, .black-key {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .key::before, .black-key::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .key:hover::before, .black-key:hover::before {
+      opacity: 1;
+    }
+    
+    .key.active, .black-key.active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    /* Cải thiện hiệu ứng cho các nút điều khiển */
+    button {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    
+    button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255,255,255,0.5);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1, 1) translate(-50%, -50%);
+      transform-origin: 50% 50%;
+    }
+    
+    button:active::after {
+      animation: ripple 0.6s ease-out;
+    }
+    
+    /* Cải thiện hiệu ứng cho visualizer */
+    .visualizer-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    
+    .visualizer-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+      pointer-events: none;
+    }
+    
+    /* Thêm hiệu ứng cho note display */
+    .note-display {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .note-highlight {
+      position: relative;
+      display: inline-block;
+      padding: 5px 15px;
+      background: rgba(204, 163, 82, 0.2);
+      border-radius: 20px;
+      animation: note-fade 1.5s forwards;
+    }
+    
+    @keyframes note-fade {
+      0% { transform: scale(0.8); opacity: 0; }
+      20% { transform: scale(1.1); opacity: 1; }
+      80% { opacity: 1; }
+      100% { transform: scale(1); opacity: 0; }
+    }
+    
+    /* Thêm hiệu ứng cho controls */
+    .controls {
+      position: relative;
+      background: rgba(255, 255, 255, 0.1);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    
+    .control-group {
+      position: relative;
+    }
+    
+    .control-group::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(204, 163, 82, 0.5), transparent);
+      transform: scaleX(0);
+      transition: transform 0.3s;
+    }
+    
+    .control-group:hover::after {
+      transform: scaleX(1);
+    }
+    
+    /* Thêm hiệu ứng cho piano container */
+    .piano-container {
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+    
+    .piano {
+      transform: rotateX(5deg);
+      transition: transform 0.3s;
+    }
+    
+    .piano:hover {
+      transform: rotateX(3deg);
+    }
+    
+    /* Thêm hiệu ứng cho theme toggle */
+    .theme-toggle {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .theme-toggle i {
+      transition: transform 0.5s;
+    }
+    
+    .theme-toggle:hover i {
+      transform: rotate(180deg);
+    }
+    
+    /* Thêm hiệu ứng cho volume control */
+    input[type="range"] {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      transition: transform 0.2s;
+    }
+    
+    input[type="range"]:hover::-webkit-slider-thumb {
+      transform: scale(1.2);
+    }
+    
+    /* Thêm hiệu ứng cho demo songs */
+    .demo-song {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    
+    .demo-song::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .demo-song:hover::before {
+      left: 100%;
+    }
+    
+    .demo-song:hover {
+      transform: translateX(5px);
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Thêm hiệu ứng cho metronome */
+    .metronome-active .recording-indicator {
+      animation: metronome-pulse 1s infinite;
+    }
+    
+    @keyframes metronome-pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    
+    /* Thêm hiệu ứng cho upload button */
+    #upload-midi {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    #upload-midi::before {
+      content: '';
+      position: absolute;
+      top: -100%;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(0deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: top 0.5s;
+    }
+    
+    #upload-midi:hover::before {
+      top: 100%;
+    }
+
+    /* Thêm style cho thông báo */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      border-radius: 5px;
+      transform: translateX(150%);
+      transition: transform 0.3s ease-in-out;
+      z-index: 1000;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .notification-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .notification i {
+      font-size: 1.2em;
+    }
+
+    .notification.info i {
+      color: #2196F3;
+    }
+
+    .notification.success i {
+      color: #4CAF50;
+    }
+
+    .notification.error i {
+      color: #f44336;
+    }
+
+    /* Cải thiện hiệu ứng visualizer */
+    .visualizer-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      background: linear-gradient(45deg, rgba(0,0,0,0.2), rgba(0,0,0,0.4));
+    }
+
+    .visualizer-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+      pointer-events: none;
+    }
+
+    #visualizer {
+      width: 100%;
+      height: 100%;
+      filter: blur(1px);
+    }
   </style>
 </head>
 <body>
@@ -528,6 +911,8 @@
         <button id="play-button" disabled><i class="fas fa-play"></i> Phát</button>
         <button id="stop-button" disabled><i class="fas fa-stop"></i> Dừng</button>
         <button id="save-button" disabled><i class="fas fa-save"></i> Lưu</button>
+        <button id="load-button"><i class="fas fa-folder-open"></i> Tải</button>
+        <input type="file" id="load-file" accept=".json" style="display: none">
       </div>
       
       <div class="control-group">
@@ -540,6 +925,13 @@
         <button id="theme-toggle"><i class="fas fa-moon"></i> Theme</button>
         <button id="upload-midi"><i class="fas fa-upload"></i> MIDI</button>
         <input type="file" id="midi-file" accept=".mid,.midi" style="display: none">
+      </div>
+
+      <div class="control-group">
+        <select id="song-select" title="Chọn bài hát demo">
+          <option value="">Chọn bài hát...</option>
+        </select>
+        <button id="play-demo"><i class="fas fa-play"></i> Phát/Dừng</button>
       </div>
     </div>
     
@@ -616,13 +1008,6 @@
         <div class="key-item"><span class="key-label">'</span> F</div>
         <div class="key-item"><span class="key-label">\</span> G</div>
       </div>
-      
-      <h3 style="margin-top: 20px;">Demo bài hát</h3>
-      <div class="demo-songs">
-        <div class="demo-song" data-song="happy-birthday">Happy Birthday</div>
-        <div class="demo-song" data-song="fur-elise">Fur Elise (Beethoven)</div>
-        <div class="demo-song" data-song="twinkle">Twinkle Twinkle Little Star</div>
-      </div>
     </div>
 
     <div class="visualizer-container">
@@ -643,6 +1028,15 @@
   const noteDisplay = document.querySelector('.note-display');
   const octaveDisplay = document.getElementById('octave-display');
   const volumeControl = document.getElementById('volume');
+  const instrumentSelect = document.getElementById('instrument-select');
+  const recordButton = document.getElementById('record-button');
+  const playButton = document.getElementById('play-button');
+  const stopButton = document.getElementById('stop-button');
+  const metronomeButton = document.getElementById('metronome-button');
+  const tempoControl = document.getElementById('tempo');
+  const octaveDownBtn = document.getElementById('octave-down');
+  const octaveUpBtn = document.getElementById('octave-up');
+  const tempoDisplay = document.getElementById('tempo-display');
   let isRecording = false;
   let recordedNotes = [];
   let startRecordTime = 0;
@@ -656,6 +1050,8 @@
   let visualizerCtx;
   let isDarkTheme = false;
   let midiFile;
+  let activeNotes = {};
+  let keyMap = {};
   
   // Ánh xạ tên nốt đến tần số
   const noteFrequencies = {
@@ -677,49 +1073,97 @@
   const instruments = {
     'piano': {
       type: 'triangle',
-      attack: 0.01,
-      decay: 0.5,
-      sustain: 0.8,
-      release: 2
+      attack: 0.001,
+      decay: 0.15,
+      sustain: 0.5,
+      release: 0.4
     },
     'bright_piano': {
-      type: 'square',
-      attack: 0.01,
-      decay: 0.3,
-      sustain: 0.7,
-      release: 1.5
+      type: 'triangle',
+      attack: 0.001,
+      decay: 0.1,
+      sustain: 0.6,
+      release: 0.3
     },
     'electric_piano': {
-      type: 'sine',
-      attack: 0.02,
-      decay: 0.5,
-      sustain: 0.5,
-      release: 1.8
+      type: 'triangle',
+      attack: 0.005,
+      decay: 0.2,
+      sustain: 0.4,
+      release: 0.2
     },
     'synth': {
-      type: 'sawtooth',
-      attack: 0.1,
-      decay: 0.3,
+      type: 'triangle',
+      attack: 0.02,
+      decay: 0.15,
       sustain: 0.7,
-      release: 2
+      release: 0.2
     },
     'strings': {
-      type: 'sine',
-      attack: 0.3,
-      decay: 0.8,
-      sustain: 0.9,
-      release: 3
+      type: 'triangle',
+      attack: 0.05,
+      decay: 0.3,
+      sustain: 0.8,
+      release: 0.3
     }
   };
   
-  // Các nút điều khiển
-  const octaveDownBtn = document.getElementById('octave-down');
-  const octaveUpBtn = document.getElementById('octave-up');
-  const recordButton = document.getElementById('record-button');
-  const playButton = document.getElementById('play-button');
-  const stopButton = document.getElementById('stop-button');
-  const instrumentSelect = document.getElementById('instrument-select');
-  const metronomeButton = document.getElementById('metronome-button');
+  // Tạo pool các oscillators để tái sử dụng
+  const oscillatorPool = {
+    pool: [],
+    maxSize: 100,
+    get() {
+      if (this.pool.length > 0) {
+        return this.pool.pop();
+      }
+      return null;
+    },
+    release(osc) {
+      if (this.pool.length < this.maxSize) {
+        this.pool.push(osc);
+      }
+    }
+  };
+
+  // Tạo pool các gain nodes
+  const gainNodePool = {
+    pool: [],
+    maxSize: 100,
+    get() {
+      if (this.pool.length > 0) {
+        return this.pool.pop();
+      }
+      return null;
+    },
+    release(gainNode) {
+      if (this.pool.length < this.maxSize) {
+        this.pool.push(gainNode);
+      }
+    }
+  };
+
+  // Tạo shared compressor và convolver
+  let sharedCompressor;
+  let sharedConvolver;
+
+  function initSharedNodes() {
+    if (!sharedCompressor) {
+      sharedCompressor = audioContext.createDynamicsCompressor();
+      sharedCompressor.threshold.value = -24;
+      sharedCompressor.knee.value = 30;
+      sharedCompressor.ratio.value = 12;
+      sharedCompressor.attack.value = 0.003;
+      sharedCompressor.release.value = 0.25;
+    }
+
+    if (!sharedConvolver) {
+      sharedConvolver = audioContext.createConvolver();
+      createReverb(sharedConvolver, 1.2, 0.4);
+    }
+
+    sharedCompressor.connect(sharedConvolver);
+    sharedConvolver.connect(masterGainNode);
+  }
   
   // Khởi tạo Audio Context khi người dùng tương tác
   function initAudio() {
@@ -736,11 +1180,23 @@
       initDemoSongs();
     }
   }
-  
+
+  // Thêm hiệu ứng visual feedback
+  function addVisualFeedback(element, type = 'press') {
+    const feedback = document.createElement('div');
+    feedback.className = `visual-feedback ${type}`;
+    element.appendChild(feedback);
+    
+    setTimeout(() => {
+      feedback.remove();
+    }, 500);
+  }
+
   // Cập nhật khi thay đổi âm lượng
   volumeControl.addEventListener('input', function() {
     if (masterGainNode) {
       masterGainNode.gain.value = this.value;
+      addVisualFeedback(this.parentElement, 'volume');
     }
   });
   
@@ -749,6 +1205,7 @@
     if (currentOctave > 1) {
       currentOctave--;
       octaveDisplay.textContent = currentOctave;
+      addVisualFeedback(this, 'octave');
     }
   });
   
@@ -756,6 +1213,7 @@
     if (currentOctave < 7) {
       currentOctave++;
       octaveDisplay.textContent = currentOctave;
+      addVisualFeedback(this, 'octave');
     }
   });
   
@@ -896,38 +1354,71 @@
     gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.05);
   }
   
-  // Xử lý phím đàn
-  const keys = document.querySelectorAll('.key, .black-key');
-  const keyMap = {};
-  const activeNotes = {};
-  
-  keys.forEach(key => {
-    const note = key.getAttribute('data-note');
-    const keyPress = key.getAttribute('data-key');
-    keyMap[keyPress] = { element: key, note: note };
+  // Xử lý sự kiện bàn phím và chuột
+  function initKeyboardEvents() {
+    const keys = document.querySelectorAll('.key, .black-key');
     
-    // Xử lý sự kiện khi nhấp chuột
-    key.addEventListener('mousedown', () => {
+    keys.forEach(key => {
+      const note = key.getAttribute('data-note');
+      const keyPress = key.getAttribute('data-key');
+      keyMap[keyPress] = { element: key, note: note };
+      
+      // Xử lý sự kiện chuột
+      key.addEventListener('mousedown', () => {
+        initAudio();
+        const noteOctave = getNoteOctave(note);
+        playNote(note, noteOctave, key);
+        addVisualFeedback(key, 'press');
+      });
+      
+      key.addEventListener('mouseup', () => {
+        stopNote(key);
+        addVisualFeedback(key, 'release');
+      });
+      
+      key.addEventListener('mouseleave', () => {
+        stopNote(key);
+      });
+      
+      // Xử lý sự kiện touch
+      key.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        initAudio();
+        const noteOctave = getNoteOctave(note);
+        playNote(note, noteOctave, key);
+        addVisualFeedback(key, 'press');
+      });
+      
+      key.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        stopNote(key);
+        addVisualFeedback(key, 'release');
+      });
+    });
+    
+    // Xử lý sự kiện bàn phím
+    document.addEventListener('keydown', (e) => {
+      if (e.repeat) return;
+      
       initAudio();
       
-      // Lấy octave thích hợp dựa trên nốt
-      const noteOctave = getNoteOctave(note);
-      playNote(note, noteOctave, key);
+      const key = e.key.toLowerCase();
+      if (keyMap[key]) {
+        const noteInfo = keyMap[key];
+        const noteOctave = getNoteOctave(noteInfo.note);
+        playNote(noteInfo.note, noteOctave, noteInfo.element);
+        addVisualFeedback(noteInfo.element, 'press');
+      }
     });
     
-    key.addEventListener('mouseup', () => stopNote(key));
-    key.addEventListener('mouseleave', () => stopNote(key));
-    key.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      initAudio();
-      const noteOctave = getNoteOctave(note);
-      playNote(note, noteOctave, key);
+    document.addEventListener('keyup', (e) => {
+      const key = e.key.toLowerCase();
+      if (keyMap[key]) {
+        stopNote(keyMap[key].element);
+        addVisualFeedback(keyMap[key].element, 'release');
+      }
     });
-    key.addEventListener('touchend', (e) => {
-      e.preventDefault();
-      stopNote(key);
-    });
-  });
+  }
   
   // Chuyển đổi từ tên nốt sang octave
   function getNoteOctave(note) {
@@ -943,27 +1434,6 @@
     return noteName.replace(/[0-9]/g, '');
   }
   
-  // Xử lý sự kiện bàn phím
-  document.addEventListener('keydown', (e) => {
-    if (e.repeat) return; // Ngăn chặn sự kiện lặp lại khi giữ phím
-    
-    initAudio();
-    
-    const key = e.key.toLowerCase();
-    if (keyMap[key]) {
-      const noteInfo = keyMap[key];
-      const noteOctave = getNoteOctave(noteInfo.note);
-      playNote(noteInfo.note, noteOctave, noteInfo.element);
-    }
-  });
-  
-  document.addEventListener('keyup', (e) => {
-    const key = e.key.toLowerCase();
-    if (keyMap[key]) {
-      stopNote(keyMap[key].element);
-    }
-  });
-  
   // Hiển thị nốt nhạc đang phát
   function displayPlayedNote(note) {
     const basicNote = getBasicNoteName(note);
@@ -972,44 +1442,37 @@
   
   // Phát âm thanh nốt nhạc
   function playNote(note, octave, element) {
+    if (!audioContext) initAudio();
+    
     // Nếu nốt đang được phát, dừng nó trước
     if (activeNotes[note]) {
       stopNote(element);
     }
     
     element.classList.add('active');
-    
-    // Hiển thị nốt đang chơi
     displayPlayedNote(note);
     
     const cleanNote = getBasicNoteName(note);
     const freq = calculateFrequency(cleanNote, octave);
-    
     const instrumentType = instrumentSelect.value;
     const instrument = instruments[instrumentType];
-    
     const startTime = audioContext.currentTime;
     const noteId = startTime.toString();
     
-    // Tạo các node âm thanh
+    // Tạo oscillator và gain node
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
-    
-    // Tạo hiệu ứng reverb nhẹ
-    const convolver = audioContext.createConvolver();
-    createReverb(convolver, 2, 0.8);
-    
-    // Kết nối các node
-    oscillator.connect(gainNode);
-    gainNode.connect(convolver);
-    convolver.connect(masterGainNode);
     
     // Cấu hình oscillator
     oscillator.type = instrument.type;
     oscillator.frequency.value = freq;
     
-    // Thêm một chút detune để âm thanh tự nhiên hơn
-    oscillator.detune.value = Math.random() * 4 - 2;
+    // Thêm detune nhẹ để tạo hiệu ứng tự nhiên
+    oscillator.detune.value = Math.random() * 10 - 5;
+    
+    // Kết nối các node
+    oscillator.connect(gainNode);
+    gainNode.connect(masterGainNode);
     
     // Áp dụng ADSR envelope
     const now = audioContext.currentTime;
@@ -1017,6 +1480,7 @@
     gainNode.gain.linearRampToValueAtTime(1, now + instrument.attack);
     gainNode.gain.linearRampToValueAtTime(instrument.sustain, now + instrument.attack + instrument.decay);
     
+    // Bắt đầu phát âm thanh
     oscillator.start();
     
     // Lưu thông tin cho việc dừng nốt
@@ -1027,14 +1491,13 @@
       id: noteId
     };
     
-    // Ghi lại nốt nhạc nếu đang ghi âm
     if (isRecording) {
       const noteTime = Date.now() - startRecordTime;
       recordedNotes.push({
         note: note,
         octave: octave,
         time: noteTime,
-        duration: 0, // Sẽ được cập nhật khi dừng nốt
+        duration: 0,
         id: noteId
       });
     }
@@ -1074,10 +1537,10 @@
     setTimeout(() => displayPlayedNote(note), (startTime - audioContext.currentTime) * 1000);
   }
   
-  // Tạo hiệu ứng reverb
+  // Tối ưu hóa việc tạo reverb
   function createReverb(convolverNode, duration, decay) {
     const sampleRate = audioContext.sampleRate;
-    const length = sampleRate * duration;
+    const length = Math.min(sampleRate * duration, 44100); // Giới hạn độ dài tối đa
     const impulse = audioContext.createBuffer(2, length, sampleRate);
     
     const leftChannel = impulse.getChannelData(0);
@@ -1085,9 +1548,9 @@
     
     for (let i = 0; i < length; i++) {
       const n = i / length;
-      // Tạo tiếng vang giảm dần theo hàm mũ
-      leftChannel[i] = (Math.random() * 2 - 1) * Math.pow(1 - n, decay);
-      rightChannel[i] = (Math.random() * 2 - 1) * Math.pow(1 - n, decay);
+      const value = (Math.random() * 2 - 1) * Math.pow(1 - n, decay);
+      leftChannel[i] = value;
+      rightChannel[i] = value * 0.8; // Thêm một chút stereo
     }
     
     convolverNode.buffer = impulse;
@@ -1095,40 +1558,49 @@
   
   // Dừng phát nốt nhạc
   function stopNote(element) {
-    element.classList.remove('active');
-    
-    const note = element.getAttribute('data-note');
-    const activeNote = activeNotes[note];
-    
-    if (activeNote) {
-      const now = audioContext.currentTime;
-      const instrumentType = instrumentSelect.value;
-      const releaseTime = instruments[instrumentType].release;
+    try {
+      element.classList.remove('active');
       
-      // Áp dụng giai đoạn release
-      activeNote.gainNode.gain.cancelScheduledValues(now);
-      activeNote.gainNode.gain.setValueAtTime(activeNote.gainNode.gain.value, now);
-      activeNote.gainNode.gain.exponentialRampToValueAtTime(0.001, now + releaseTime);
+      const note = element.getAttribute('data-note');
+      const activeNote = activeNotes[note];
       
-      // Dừng oscillator sau khi release kết thúc
-      setTimeout(() => {
-        if (activeNote.oscillator) {
-          activeNote.oscillator.stop();
-        }
-      }, releaseTime * 1000);
-      
-      // Cập nhật thời lượng nếu đang ghi âm
-      if (isRecording) {
-        const noteTime = Date.now() - startRecordTime;
+      if (activeNote) {
+        const now = audioContext.currentTime;
+        const instrumentType = instrumentSelect.value;
+        const releaseTime = instruments[instrumentType].release;
         
-        // Tìm nốt trong danh sách ghi âm và cập nhật thời lượng
-        const recordedNote = recordedNotes.find(n => n.note === note && n.duration === 0);
-        if (recordedNote) {
-          recordedNote.duration = noteTime - recordedNote.time;
+        // Áp dụng giai đoạn release
+        activeNote.gainNode.gain.cancelScheduledValues(now);
+        activeNote.gainNode.gain.setValueAtTime(activeNote.gainNode.gain.value, now);
+        activeNote.gainNode.gain.exponentialRampToValueAtTime(0.001, now + releaseTime);
+        
+        // Dừng oscillator sau khi release kết thúc
+        setTimeout(() => {
+          try {
+            if (activeNote.oscillator) {
+              activeNote.oscillator.stop();
+              activeNote.oscillator.disconnect();
+            }
+            if (activeNote.gainNode) {
+              activeNote.gainNode.disconnect();
+            }
+          } catch (error) {
+            console.error('Lỗi dọn dẹp nốt nhạc:', error);
+          }
+        }, releaseTime * 1000);
+        
+        if (isRecording) {
+          const noteTime = Date.now() - startRecordTime;
+          const recordedNote = recordedNotes.find(n => n.note === note && n.duration === 0);
+          if (recordedNote) {
+            recordedNote.duration = noteTime - recordedNote.time;
+          }
         }
+        
+        delete activeNotes[note];
       }
-      
-      delete activeNotes[note];
+    } catch (error) {
+      console.error('Lỗi dừng nốt nhạc:', error);
     }
   }
   
@@ -1145,210 +1617,295 @@
   function initDemoSongs() {
     const demoSongs = {
       'happy-birthday': [
-         { note: 'G', duration: 0.6, wait: 0 },
-    { note: 'E', duration: 0.4, wait: 0.7 },
-    { note: 'G', duration: 0.6, wait: 0.5 },
-    { note: 'A', duration: 0.6, wait: 0.7 },
-    { note: 'G', duration: 0.4, wait: 0.7 },
-    { note: 'E', duration: 0.6, wait: 0.5 },
-    { note: 'G', duration: 0.8, wait: 0.7 },
-
-    { note: 'G', duration: 0.6, wait: 1.0 },
-    { note: 'E', duration: 0.4, wait: 0.7 },
-    { note: 'G', duration: 0.6, wait: 0.5 },
-    { note: 'A', duration: 0.6, wait: 0.7 },
-    { note: 'G', duration: 0.4, wait: 0.7 },
-    { note: 'E', duration: 0.6, wait: 0.5 },
-    { note: 'D', duration: 0.8, wait: 0.7 },
-
-    { note: 'D', duration: 0.6, wait: 1.0 },
-    { note: 'E', duration: 0.6, wait: 0.7 },
-    { note: 'G', duration: 0.6, wait: 0.7 },
-    { note: 'A', duration: 0.6, wait: 0.7 },
-    { note: 'C2', duration: 0.8, wait: 0.7 },
-    { note: 'A', duration: 0.6, wait: 0.9 },
-    { note: 'G', duration: 0.8, wait: 0.7 }
-  ],
-
-  'canon-d': [
-    // Canon in D - Pachelbel (phần mở đầu nổi tiếng)
-    { note: 'F#', duration: 0.5, wait: 0 },
-    { note: 'E', duration: 0.5, wait: 0.6 },
-    { note: 'D', duration: 0.5, wait: 0.6 },
-    { note: 'C#', duration: 0.5, wait: 0.6 },
-    { note: 'B', duration: 0.5, wait: 0.6 },
-    { note: 'A', duration: 0.5, wait: 0.6 },
-    { note: 'B', duration: 0.5, wait: 0.6 },
-    { note: 'C#', duration: 0.5, wait: 0.6 },
-    
-    { note: 'D', duration: 0.5, wait: 0.8 },
-    { note: 'A', duration: 0.5, wait: 0.6 },
-    { note: 'B', duration: 0.5, wait: 0.6 },
-    { note: 'F#', duration: 0.5, wait: 0.6 },
-    { note: 'G', duration: 0.5, wait: 0.6 },
-    { note: 'D', duration: 0.5, wait: 0.6 },
-    { note: 'G', duration: 0.5, wait: 0.6 },
-    { note: 'A', duration: 0.5, wait: 0.6 },
-    
-    { note: 'D', duration: 0.5, wait: 0.8 },
-    { note: 'F#', duration: 0.5, wait: 0.6 },
-    { note: 'A', duration: 0.5, wait: 0.6 },
-    { note: 'D2', duration: 0.5, wait: 0.6 },
-    { note: 'C#2', duration: 0.5, wait: 0.6 },
-    { note: 'B', duration: 0.5, wait: 0.6 },
-    { note: 'A', duration: 0.5, wait: 0.6 },
-    { note: 'G', duration: 0.5, wait: 0.6 },
-    
-    { note: 'F#', duration: 0.5, wait: 0.8 },
-    { note: 'D', duration: 0.5, wait: 0.6 },
-    { note: 'E', duration: 0.5, wait: 0.6 },
-    { note: 'F#', duration: 0.5, wait: 0.6 },
-    { note: 'G', duration: 0.5, wait: 0.6 },
-    { note: 'A', duration: 0.5, wait: 0.6 },
-    { note: 'B', duration: 0.5, wait: 0.6 },
-    { note: 'G', duration: 0.5, wait: 0.6 }
-  ],
-      
-      'fur-elise': [
-        { note: 'E2', duration: 0.4, wait: 0 },
-        { note: 'D#2', duration: 0.4, wait: 0.5 },
-        { note: 'E2', duration: 0.4, wait: 0.5 },
-        { note: 'D#2', duration: 0.4, wait: 0.5 },
-        { note: 'E2', duration: 0.4, wait: 0.5 },
-        { note: 'B', duration: 0.4, wait: 0.5 },
-        { note: 'D2', duration: 0.4, wait: 0.5 },
-        { note: 'C2', duration: 0.4, wait: 0.5 },
-        { note: 'A', duration: 0.8, wait: 0.5 },
-        { note: 'C', duration: 0.4, wait: 1.0 },
-        { note: 'E', duration: 0.4, wait: 0.5 },
-        { note: 'A', duration: 0.4, wait: 0.5 },
-        { note: 'B', duration: 0.8, wait: 0.5 },
-        { note: 'E', duration: 0.4, wait: 1.0 },
-        { note: 'G#', duration: 0.4, wait: 0.5 },
-        { note: 'B', duration: 0.4, wait: 0.5 },
-        { note: 'C2', duration: 0.8, wait: 0.5 },
-        { note: 'E', duration: 0.4, wait: 1.0 },
-        { note: 'E2', duration: 0.4, wait: 0.5 },
-        { note: 'D#2', duration: 0.4, wait: 0.5 },
-        { note: 'E2', duration: 0.4, wait: 0.5 },
-        { note: 'D#2', duration: 0.4, wait: 0.5 },
-        { note: 'E2', duration: 0.4, wait: 0.5 },
-        { note: 'B', duration: 0.4, wait: 0.5 },
-        { note: 'D2', duration: 0.4, wait: 0.5 },
-        { note: 'C2', duration: 0.4, wait: 0.5 },
-        { note: 'A', duration: 0.8, wait: 0.5 }
-      ],
-      
-      'twinkle': [
         { note: 'C', duration: 0.6, wait: 0 },
-        { note: 'C', duration: 0.6, wait: 0.7 },
-        { note: 'G', duration: 0.6, wait: 0.7 },
-        { note: 'G', duration: 0.6, wait: 0.7 },
-        { note: 'A', duration: 0.6, wait: 0.7 },
-        { note: 'A', duration: 0.6, wait: 0.7 },
-        { note: 'G', duration: 0.9, wait: 0.7 },
-        
-        { note: 'F', duration: 0.6, wait: 1.0 },
-        { note: 'F', duration: 0.6, wait: 0.7 },
-        { note: 'E', duration: 0.6, wait: 0.7 },
-        { note: 'E', duration: 0.6, wait: 0.7 },
-        { note: 'D', duration: 0.6, wait: 0.7 },
-        { note: 'D', duration: 0.6, wait: 0.7 },
-        { note: 'C', duration: 0.9, wait: 0.7 }
+        { note: 'C', duration: 0.4, wait: 0.2 },
+        { note: 'D', duration: 0.6, wait: 0.2 },
+        { note: 'C', duration: 0.6, wait: 0.2 },
+        { note: 'F', duration: 0.6, wait: 0.2 },
+        { note: 'E', duration: 1.2, wait: 0.4 },
+        { note: 'C', duration: 0.6, wait: 0.2 },
+        { note: 'C', duration: 0.4, wait: 0.2 },
+        { note: 'D', duration: 0.6, wait: 0.2 },
+        { note: 'C', duration: 0.6, wait: 0.2 },
+        { note: 'G', duration: 0.6, wait: 0.2 },
+        { note: 'F', duration: 1.2, wait: 0.4 },
+        { note: 'C', duration: 0.6, wait: 0.2 },
+        { note: 'C', duration: 0.4, wait: 0.2 },
+        { note: 'C2', duration: 0.6, wait: 0.2 },
+        { note: 'A', duration: 0.6, wait: 0.2 },
+        { note: 'F', duration: 0.6, wait: 0.2 },
+        { note: 'E', duration: 0.6, wait: 0.2 },
+        { note: 'D', duration: 1.2, wait: 0.4 },
+        { note: 'A#', duration: 0.6, wait: 0.2 },
+        { note: 'A#', duration: 0.4, wait: 0.2 },
+        { note: 'A', duration: 0.6, wait: 0.2 },
+        { note: 'F', duration: 0.6, wait: 0.2 },
+        { note: 'G', duration: 0.6, wait: 0.2 },
+        { note: 'F', duration: 1.2, wait: 0.4 }
+      ],
+      'twinkle-twinkle': [
+        { note: 'C', duration: 0.4, wait: 0.1 },
+        { note: 'C', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'A', duration: 0.4, wait: 0.1 },
+        { note: 'A', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.8, wait: 0.2 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'D', duration: 0.4, wait: 0.1 },
+        { note: 'D', duration: 0.4, wait: 0.1 },
+        { note: 'C', duration: 0.8, wait: 0.2 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'D', duration: 0.8, wait: 0.2 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'D', duration: 0.8, wait: 0.2 },
+        { note: 'C', duration: 0.4, wait: 0.1 },
+        { note: 'C', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'A', duration: 0.4, wait: 0.1 },
+        { note: 'A', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.8, wait: 0.2 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'D', duration: 0.4, wait: 0.1 },
+        { note: 'D', duration: 0.4, wait: 0.1 },
+        { note: 'C', duration: 0.8, wait: 0.2 }
+      ],
+      'jingle-bells': [
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.8, wait: 0.2 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.8, wait: 0.2 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'C', duration: 0.6, wait: 0.2 },
+        { note: 'D', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 1.6, wait: 0.4 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'D', duration: 0.4, wait: 0.1 },
+        { note: 'D', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'D', duration: 0.8, wait: 0.2 },
+        { note: 'G', duration: 0.8, wait: 0.2 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.8, wait: 0.2 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.8, wait: 0.2 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'C', duration: 0.6, wait: 0.2 },
+        { note: 'D', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 1.6, wait: 0.4 }
+      ],
+      'ode-to-joy': [
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'D', duration: 0.4, wait: 0.1 },
+        { note: 'C', duration: 0.4, wait: 0.1 },
+        { note: 'C', duration: 0.4, wait: 0.1 },
+        { note: 'D', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'D', duration: 0.4, wait: 0.1 },
+        { note: 'D', duration: 0.8, wait: 0.2 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'D', duration: 0.4, wait: 0.1 },
+        { note: 'C', duration: 0.4, wait: 0.1 },
+        { note: 'C', duration: 0.4, wait: 0.1 },
+        { note: 'D', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'D', duration: 0.4, wait: 0.1 },
+        { note: 'C', duration: 0.4, wait: 0.1 },
+        { note: 'C', duration: 0.8, wait: 0.2 }
+      ],
+      'fur-elise': [
+        { note: 'E', duration: 0.3, wait: 0.1 },
+        { note: 'D#', duration: 0.3, wait: 0.1 },
+        { note: 'E', duration: 0.3, wait: 0.1 },
+        { note: 'D#', duration: 0.3, wait: 0.1 },
+        { note: 'E', duration: 0.3, wait: 0.1 },
+        { note: 'B', duration: 0.3, wait: 0.1 },
+        { note: 'D', duration: 0.3, wait: 0.1 },
+        { note: 'C', duration: 0.3, wait: 0.1 },
+        { note: 'A', duration: 0.6, wait: 0.2 },
+        { note: 'C', duration: 0.3, wait: 0.1 },
+        { note: 'E', duration: 0.6, wait: 0.2 },
+        { note: 'A', duration: 0.6, wait: 0.2 },
+        { note: 'B', duration: 0.6, wait: 0.2 },
+        { note: 'E', duration: 0.3, wait: 0.1 },
+        { note: 'G#', duration: 0.3, wait: 0.1 },
+        { note: 'B', duration: 0.6, wait: 0.2 },
+        { note: 'C2', duration: 0.6, wait: 0.2 },
+        { note: 'E', duration: 0.3, wait: 0.1 },
+        { note: 'D#', duration: 0.3, wait: 0.1 },
+        { note: 'E', duration: 0.3, wait: 0.1 },
+        { note: 'D#', duration: 0.3, wait: 0.1 },
+        { note: 'E', duration: 0.3, wait: 0.1 },
+        { note: 'B', duration: 0.3, wait: 0.1 },
+        { note: 'D', duration: 0.3, wait: 0.1 },
+        { note: 'C', duration: 0.3, wait: 0.1 },
+        { note: 'A', duration: 0.6, wait: 0.2 },
+        { note: 'C', duration: 0.3, wait: 0.1 },
+        { note: 'E', duration: 0.6, wait: 0.2 },
+        { note: 'A', duration: 0.6, wait: 0.2 },
+        { note: 'B', duration: 0.6, wait: 0.2 },
+        { note: 'E', duration: 0.3, wait: 0.1 },
+        { note: 'C', duration: 0.3, wait: 0.1 },
+        { note: 'B', duration: 0.6, wait: 0.2 },
+        { note: 'A', duration: 0.6, wait: 0.2 }
+      ],
+      'noi-nay-co-anh': [
+        { note: 'C', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'C2', duration: 0.4, wait: 0.1 },
+        { note: 'E2', duration: 0.4, wait: 0.1 },
+        { note: 'G2', duration: 0.4, wait: 0.1 },
+        { note: 'C3', duration: 0.8, wait: 0.2 },
+        { note: 'B2', duration: 0.4, wait: 0.1 },
+        { note: 'A2', duration: 0.4, wait: 0.1 },
+        { note: 'G2', duration: 0.4, wait: 0.1 },
+        { note: 'F2', duration: 0.4, wait: 0.1 },
+        { note: 'E2', duration: 0.4, wait: 0.1 },
+        { note: 'D2', duration: 0.4, wait: 0.1 },
+        { note: 'C2', duration: 0.8, wait: 0.2 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'A', duration: 0.4, wait: 0.1 },
+        { note: 'B', duration: 0.4, wait: 0.1 },
+        { note: 'C2', duration: 0.4, wait: 0.1 },
+        { note: 'D2', duration: 0.4, wait: 0.1 },
+        { note: 'E2', duration: 0.4, wait: 0.1 },
+        { note: 'F2', duration: 0.8, wait: 0.2 },
+        { note: 'E2', duration: 0.4, wait: 0.1 },
+        { note: 'D2', duration: 0.4, wait: 0.1 },
+        { note: 'C2', duration: 0.4, wait: 0.1 },
+        { note: 'B', duration: 0.4, wait: 0.1 },
+        { note: 'A', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.8, wait: 0.2 }
+      ],
+      'tuy-am': [
+        { note: 'C', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'C2', duration: 0.4, wait: 0.1 },
+        { note: 'E2', duration: 0.4, wait: 0.1 },
+        { note: 'G2', duration: 0.4, wait: 0.1 },
+        { note: 'C3', duration: 0.8, wait: 0.2 },
+        { note: 'B2', duration: 0.4, wait: 0.1 },
+        { note: 'A2', duration: 0.4, wait: 0.1 },
+        { note: 'G2', duration: 0.4, wait: 0.1 },
+        { note: 'F2', duration: 0.4, wait: 0.1 },
+        { note: 'E2', duration: 0.4, wait: 0.1 },
+        { note: 'D2', duration: 0.4, wait: 0.1 },
+        { note: 'C2', duration: 0.8, wait: 0.2 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'A', duration: 0.4, wait: 0.1 },
+        { note: 'B', duration: 0.4, wait: 0.1 },
+        { note: 'C2', duration: 0.4, wait: 0.1 },
+        { note: 'D2', duration: 0.4, wait: 0.1 },
+        { note: 'E2', duration: 0.4, wait: 0.1 },
+        { note: 'F2', duration: 0.8, wait: 0.2 },
+        { note: 'E2', duration: 0.4, wait: 0.1 },
+        { note: 'D2', duration: 0.4, wait: 0.1 },
+        { note: 'C2', duration: 0.4, wait: 0.1 },
+        { note: 'B', duration: 0.4, wait: 0.1 },
+        { note: 'A', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.8, wait: 0.2 }
+      ],
+      'dom-dom': [
+        { note: 'C', duration: 0.4, wait: 0.1 },
+        { note: 'E', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'C2', duration: 0.4, wait: 0.1 },
+        { note: 'E2', duration: 0.4, wait: 0.1 },
+        { note: 'G2', duration: 0.4, wait: 0.1 },
+        { note: 'C3', duration: 0.8, wait: 0.2 },
+        { note: 'B2', duration: 0.4, wait: 0.1 },
+        { note: 'A2', duration: 0.4, wait: 0.1 },
+        { note: 'G2', duration: 0.4, wait: 0.1 },
+        { note: 'F2', duration: 0.4, wait: 0.1 },
+        { note: 'E2', duration: 0.4, wait: 0.1 },
+        { note: 'D2', duration: 0.4, wait: 0.1 },
+        { note: 'C2', duration: 0.8, wait: 0.2 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'A', duration: 0.4, wait: 0.1 },
+        { note: 'B', duration: 0.4, wait: 0.1 },
+        { note: 'C2', duration: 0.4, wait: 0.1 },
+        { note: 'D2', duration: 0.4, wait: 0.1 },
+        { note: 'E2', duration: 0.4, wait: 0.1 },
+        { note: 'F2', duration: 0.8, wait: 0.2 },
+        { note: 'E2', duration: 0.4, wait: 0.1 },
+        { note: 'D2', duration: 0.4, wait: 0.1 },
+        { note: 'C2', duration: 0.4, wait: 0.1 },
+        { note: 'B', duration: 0.4, wait: 0.1 },
+        { note: 'A', duration: 0.4, wait: 0.1 },
+        { note: 'G', duration: 0.4, wait: 0.1 },
+        { note: 'F', duration: 0.8, wait: 0.2 }
       ]
-      
     };
     
-    // Thêm sự kiện cho các nút demo
-    document.querySelectorAll('.demo-song').forEach(button => {
-      button.addEventListener('click', function() {
-        const songName = this.getAttribute('data-song');
-        playDemoSong(demoSongs[songName]);
-      });
-    });
-  }
-  
-  // Phát bài hát demo
-  function playDemoSong(songNotes) {
-    if (!audioContext) initAudio();
+    // Thêm các bài hát vào select
+    const songSelect = document.getElementById('song-select');
+    songSelect.innerHTML = '<option value="">Chọn bài hát...</option>';
     
-    if (isPlaying) return;
-    
-    isPlaying = true;
-    playButton.disabled = true;
-    stopButton.disabled = false;
-    
-    let startTime = audioContext.currentTime;
-    
-    songNotes.forEach(noteData => {
-      const noteTime = startTime + noteData.wait;
-      playDemoNote(noteData.note, noteTime, noteData.duration);
-      
-      // Đánh dấu phím tương ứng
-      setTimeout(() => {
-        const element = document.querySelector(`[data-note="${noteData.note}"]`);
-        if (element) {
-          element.classList.add('active');
-          setTimeout(() => {
-            element.classList.remove('active');
-          }, noteData.duration * 1000);
-        }
-      }, noteData.wait * 1000);
+    Object.keys(demoSongs).forEach(songName => {
+      const option = document.createElement('option');
+      option.value = songName;
+      option.textContent = songName.split('-').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' ');
+      songSelect.appendChild(option);
     });
     
-    // Tính toán tổng thời gian của bản demo
-    if (songNotes.length > 0) {
-      const lastNote = songNotes[songNotes.length - 1];
-      const totalDuration = lastNote.wait + lastNote.duration + 0.5;
-      
-      setTimeout(() => {
-        isPlaying = false;
-        playButton.disabled = false;
-        stopButton.disabled = true;
-      }, totalDuration * 1000);
-    }
+    // Lưu các bài hát vào biến toàn cục
+    window.demoSongs = demoSongs;
   }
   
-  // Phát nốt nhạc demo
-  function playDemoNote(noteName, startTime, duration) {
-    const basicNote = getBasicNoteName(noteName);
-    const octave = noteName.includes('2') ? currentOctave + 1 : currentOctave;
-    const freq = calculateFrequency(basicNote, octave);
-    
-    const instrumentType = instrumentSelect.value;
-    const instrument = instruments[instrumentType];
-    
-    // Tạo các node âm thanh
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    // Kết nối các node
-    oscillator.connect(gainNode);
-    gainNode.connect(masterGainNode);
-    
-    // Cấu hình oscillator
-    oscillator.type = instrument.type;
-    oscillator.frequency.value = freq;
-    
-    // Áp dụng ADSR envelope
-    gainNode.gain.setValueAtTime(0, startTime);
-    gainNode.gain.linearRampToValueAtTime(1, startTime + instrument.attack);
-    gainNode.gain.linearRampToValueAtTime(instrument.sustain, startTime + instrument.attack + instrument.decay);
-    gainNode.gain.setValueAtTime(instrument.sustain, startTime + duration - instrument.release);
-    gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
-    
-    // Phát âm thanh
-    oscillator.start(startTime);
-    oscillator.stop(startTime + duration + 0.1);
-    
-    // Hiển thị nốt
-    setTimeout(() => displayPlayedNote(noteName), (startTime - audioContext.currentTime) * 1000);
-  }
-
   // Khởi tạo visualizer
   function initVisualizer() {
     analyser = audioContext.createAnalyser();
-    analyser.fftSize = 256;
+    analyser.fftSize = 512;
     masterGainNode.connect(analyser);
     
     const canvas = document.getElementById('visualizer');
@@ -1363,7 +1920,7 @@
       const dataArray = new Uint8Array(bufferLength);
       analyser.getByteFrequencyData(dataArray);
       
-      visualizerCtx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      visualizerCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
       visualizerCtx.fillRect(0, 0, canvas.width, canvas.height);
       
       const barWidth = (canvas.width / bufferLength) * 2.5;
@@ -1372,11 +1929,39 @@
       for (let i = 0; i < bufferLength; i++) {
         const barHeight = (dataArray[i] / 255) * canvas.height;
         
-        visualizerCtx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
+        // Tạo gradient màu dựa trên tần số và âm lượng
+        const gradient = visualizerCtx.createLinearGradient(0, canvas.height - barHeight, 0, canvas.height);
+        const hue = (i * 360 / bufferLength + Date.now() / 50) % 360;
+        gradient.addColorStop(0, `hsla(${hue}, 100%, 50%, 0.8)`);
+        gradient.addColorStop(1, `hsla(${hue}, 100%, 30%, 0.4)`);
+        
+        visualizerCtx.fillStyle = gradient;
         visualizerCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+        
+        // Thêm hiệu ứng glow
+        visualizerCtx.shadowColor = `hsla(${hue}, 100%, 50%, 0.5)`;
+        visualizerCtx.shadowBlur = 10;
+        visualizerCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+        visualizerCtx.shadowBlur = 0;
         
         x += barWidth + 1;
       }
+      
+      // Thêm hiệu ứng sóng
+      visualizerCtx.beginPath();
+      visualizerCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      visualizerCtx.lineWidth = 2;
+      
+      for (let i = 0; i < canvas.width; i++) {
+        const y = canvas.height / 2 + Math.sin(i * 0.02 + Date.now() * 0.001) * 20;
+        if (i === 0) {
+          visualizerCtx.moveTo(i, y);
+        } else {
+          visualizerCtx.lineTo(i, y);
+        }
+      }
+      
+      visualizerCtx.stroke();
     }
     
     drawVisualizer();
@@ -1428,15 +2013,190 @@
   });
 
   // Thêm sự kiện cho tempo control
-  const tempoControl = document.getElementById('tempo');
-  const tempoDisplay = document.getElementById('tempo-display');
-  
   tempoControl.addEventListener('input', function() {
     tempoDisplay.textContent = this.value + ' BPM';
     if (metronomeActive) {
       stopMetronome();
       startMetronome();
     }
+  });
+
+  // Thêm sự kiện cho nút phát demo
+  document.getElementById('play-demo').addEventListener('click', function() {
+    if (isPlaying) {
+      stopPlayback();
+      this.innerHTML = '<i class="fas fa-play"></i> Phát/Dừng';
+    } else {
+      playDemoSong();
+      this.innerHTML = '<i class="fas fa-stop"></i> Phát/Dừng';
+    }
+  });
+
+  // Khởi tạo các sự kiện khi trang web load xong
+  initKeyboardEvents();
+  
+  // Thêm hiệu ứng loading
+  const loadingScreen = document.createElement('div');
+  loadingScreen.className = 'loading-screen';
+  loadingScreen.innerHTML = `
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Đang tải VirtualPiano Pro...</div>
+    </div>
+  `;
+  document.body.appendChild(loadingScreen);
+  
+  // Xóa loading screen sau khi tải xong
+  setTimeout(() => {
+    loadingScreen.classList.add('fade-out');
+    setTimeout(() => {
+      loadingScreen.remove();
+    }, 500);
+  }, 1000);
+
+  // Phát bài hát demo
+  function playDemoSong() {
+    try {
+      if (!audioContext) initAudio();
+      
+      const songName = document.getElementById('song-select').value;
+      if (!songName) {
+        alert('Vui lòng chọn một bài hát demo.');
+        return;
+      }
+      
+      const song = window.demoSongs[songName];
+      if (!song) {
+        alert('Không tìm thấy bài hát demo.');
+        return;
+      }
+      
+      isPlaying = true;
+      playButton.disabled = true;
+      stopButton.disabled = false;
+      recordButton.disabled = true;
+      
+      let startTime = audioContext.currentTime;
+      let currentTime = 0;
+      
+      song.forEach(note => {
+        try {
+          const noteTime = startTime + currentTime;
+          const duration = note.duration;
+          
+          // Tạo và phát nốt nhạc
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+          
+          oscillator.type = instruments[instrumentSelect.value].type;
+          oscillator.frequency.value = calculateFrequency(note.note, currentOctave);
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(masterGainNode);
+          
+          // Áp dụng ADSR envelope
+          gainNode.gain.setValueAtTime(0, noteTime);
+          gainNode.gain.linearRampToValueAtTime(1, noteTime + 0.01);
+          gainNode.gain.linearRampToValueAtTime(0.7, noteTime + 0.1);
+          gainNode.gain.setValueAtTime(0.7, noteTime + duration - 0.1);
+          gainNode.gain.linearRampToValueAtTime(0, noteTime + duration);
+          
+          oscillator.start(noteTime);
+          oscillator.stop(noteTime + duration);
+          
+          // Hiển thị nốt đang phát
+          setTimeout(() => {
+            try {
+              const element = findKeyElement(note.note);
+              if (element) {
+                element.classList.add('active');
+                displayPlayedNote(note.note);
+              }
+            } catch (error) {
+              console.error('Lỗi hiển thị nốt nhạc:', error);
+            }
+          }, (noteTime - audioContext.currentTime) * 1000);
+          
+          setTimeout(() => {
+            try {
+              const element = findKeyElement(note.note);
+              if (element) {
+                element.classList.remove('active');
+              }
+            } catch (error) {
+              console.error('Lỗi ẩn nốt nhạc:', error);
+            }
+          }, (noteTime + duration - audioContext.currentTime) * 1000);
+          
+          currentTime += note.wait + note.duration;
+        } catch (error) {
+          console.error('Lỗi phát nốt nhạc trong bài hát demo:', error);
+        }
+      });
+      
+      // Dừng phát sau khi bài hát kết thúc
+      setTimeout(() => {
+        try {
+          stopPlayback();
+        } catch (error) {
+          console.error('Lỗi dừng phát bài hát demo:', error);
+        }
+      }, currentTime * 1000 + 1000);
+    } catch (error) {
+      console.error('Lỗi phát bài hát demo:', error);
+      alert('Có lỗi xảy ra khi phát bài hát demo. Vui lòng thử lại.');
+      stopPlayback();
+    }
+  }
+  
+  // Dừng phát bài hát
+  function stopPlayback() {
+    isPlaying = false;
+    playButton.disabled = false;
+    stopButton.disabled = true;
+    recordButton.disabled = false;
+    
+    // Dừng tất cả các nốt đang phát
+    Object.keys(activeNotes).forEach(note => {
+      const element = findKeyElement(note);
+      if (element) {
+        stopNote(element);
+      }
+    });
+  }
+
+  // Thêm hiệu ứng thông báo
+  function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+      <div class="notification-content">
+        <i class="fas ${type === 'info' ? 'fa-info-circle' : type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span>${message}</span>
+      </div>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 100);
+    
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        notification.remove();
+      }, 300);
+    }, 3000);
+  }
+
+  // Thêm sự kiện cho các nút điều khiển
+  document.querySelectorAll('button, select, input[type="range"]').forEach(element => {
+    element.addEventListener('click', function() {
+      const title = this.getAttribute('title');
+      if (title) {
+        showNotification(title, 'info');
+      }
+    });
   });
 });
 
